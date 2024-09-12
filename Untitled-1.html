@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PINGVIGANG</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            width: 360px; /* Ширина */
+            height: 740px; /* Высота */
+            margin: 0; /* Убираем отступы по умолчанию */
+            font-family: 'Roboto', sans-serif;
+            text-align: center;
+            margin: 0;
+            background-color: rgb(255, 255, 255);
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .extraction-container {
+            text-align: center;
+            margin-top: 0; /* Убираем отступ сверху */
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .extraction-container img {
+            width: 33.33px;
+            height: auto;
+            margin-top: 5px; /* Уменьшаем отступ сверху */
+            margin-bottom: 5px;
+        }
+
+        .extraction-item {
+            display: flex;
+            align-items: center;
+            margin: 0 5px; /* Уменьшаем отступ слева и справа */
+        }
+
+        .header {
+            margin-bottom: 40px;
+        }
+
+        .cat-count {
+            font-size: 3em;
+            margin-bottom: 30px;
+        }
+
+        .task-container {
+            display: flex;
+            flex-wrap: wrap; /* Обтекание задач по горизонтали */
+            justify-content: flex-start; /* Выравнивание по левому краю */
+            width: 100%;
+            padding: 0 20px;
+        }
+
+        .task {
+            margin: 10px;
+            width: 48%; /* Ширина задач для горизонтального расположения */
+            min-width: 150px; /* Минимальная ширина для маленьких экранов */
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            position: relative; /* Добавляем относительное позиционирование для .task */
+            background: linear-gradient(to right, #007fff, #66b3ff); /* Градиент */
+            font-family: 'MADE Waffle Soft', sans-serif; /* MADE Waffle Soft шрифт */
+        }
+
+        .control-button a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .task-title, .task-count {
+            color: white;
+        }
+        .control-panel {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            background-color: #ededed;
+            padding: 10px;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            z-index: 1;
+        }
+
+        .control-button {
+            background-color: transparent;
+            border: none;
+            border-radius: 10px;
+            padding: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 70px;
+            height: 90px;
+        }
+
+        .control-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .control-button img {
+            width: 40px;
+            height: 40px;
+        }
+
+        .control-button-text {
+            font-size: 12px;
+            font-family: "junegull";
+            text-align: center;
+        }
+
+        /* Media Queries for Responsive Design */
+        @media (max-width: 768px) {
+            .task-container {
+                flex-direction: row; /* Горизонтальное расположение задач */
+                flex-wrap: wrap; /* Перенос задач на новую строку */
+            }
+
+            .control-panel {
+                flex-direction: row; /* Горизонтальное расположение кнопок */
+                align-items: center;
+            }
+
+            .control-button {
+                margin-right: 10px; /* Отступ между кнопками */
+                width: auto; /* Автоматическая ширина кнопок */
+            }
+
+            /* Дополнительное стилирование для задач на телефонах */
+            .task {
+                width: 100%; /* Занимает всю ширину экрана на мобильном */
+                margin-bottom: 10px; /* Отступ снизу */
+            }
+
+            /* Стиль для картинки карты */
+            #mapsImage {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-image: url('EROR43-vmake.jpg'); 
+                background-size: cover;
+                display: none;
+                z-index: 1; 
+                overflow-x: auto;
+            }
+        }
+
+        /* Стиль для контейнера с кнопками */
+        .control-buttons-container {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+        /* Шрифт по умолчанию */
+        @font-face {
+            font-family: 'junegull';
+            src: url('junegull.ttf') format('truetype');
+        }
+
+        /* Снег */
+        .snow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .flake {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #fff;
+            border-radius: 50%;
+            opacity: 0.7;
+            animation: fall 10s linear infinite;
+        }
+        .image-container {
+            position: relative;
+            display: inline-block; /* For proper positioning within the list */
+          }
+          
+          .image-container img {
+            transition: transform 0.1s ease; /* Smooth transition for the hover effect */
+          }
+          
+          .image-container:hover img {
+            transform: scale(1.1); /* Make the image slightly bigger on hover */
+            cursor: pointer; /* Change the cursor to a pointer on hover */
+        }
+      /* Анимация падения снежинок */
+      @keyframes fall {
+          0% {transform: translate(0, 0);
+              opacity: 1;
+          }
+          100% {
+              transform: translate(0, 100%);
+              opacity: 0;
+          }
+      }
+
+      /* Добавляем стили для разных типов снежинок */
+      .flake-small {
+          width: 5px;
+          height: 5px;
+          animation-duration: 5s;
+      }
+
+      .flake-large {
+          width: 15px;
+          height: 15px;
+          animation-duration:
+          15s;
+      }
+
+      .flake-medium {
+          width: 10px;
+          height: 10px;
+          animation-duration: 10s;
+      }
+
+      /* Стили для картинки пингвина */
+      .penguin-container {
+          position: relative; /* Добавляем относительное позиционирование */
+          margin-top: 20px;
+          display: inline-block;
+          text-align: center;
+      }
+
+      .penguin-container img {
+          width: 150px; /* Устанавливаем фиксированную ширину */
+          height: auto; /* Сохраняем пропорции */
+          position: relative; /* Позиционируем пингвина */
+          top: 50%; /* Позиционируем по центру по вертикали */
+          left: 50%; /* Позиционируем по центру по горизонтали */
+          transform: translate(-50%, -50%); /* Выравниваем по центру */
+      }
+
+      /* Стили для флажка Антарктики */
+      .antarctica-flag {
+          width: 600px; /* Увеличиваем ширину в 4 раза */
+          height: auto; /* Сохраняем пропорции */
+          display: block; /* Занимаем всю доступную ширину */
+          margin: 0 auto; /* Выравниваем по центру */
+          position: absolute; /* Позиционируем флаг */
+          top: 50%; /* Позиционируем по центру по вертикали */
+          left: 50%; /* Позиционируем по центру по горизонтали */
+          transform: translate(-50%, -50%); /* Выравниваем по центру */
+          z-index: -1; /* Флаг позади пингвина */
+      }
+
+      /* Стили для секции extraction */
+      .extraction-container {
+          margin-top: 0; /* Убираем отступ сверху */
+      }
+
+      /* Стили для текста в секции extraction */
+      .extraction-container h4 {
+          margin-bottom: 5px; /* Уменьшаем отступ снизу */
+      }
+
+      .extraction-container p {
+          margin-bottom: 0; /* Убираем отступ снизу */
+      }
+
+      /* Стили для секции с пингвином */
+      .penguin-container {
+          margin-bottom: 0; /* Убираем отступ снизу */
+      }
+
+      /* Стили для секции с "extraction" */
+      .extraction-container {
+          margin-bottom: 0; /* Убираем отступ снизу */
+      }
+
+      /* Стили для пингвина */
+      .penguin-container img {
+          margin-bottom: -10px; /* Уменьшаем отступ снизу для пингвина */
+      }
+
+      /* Стили для блока "extraction" */
+      .extraction-container {
+          margin-top: -10px; /* Уменьшаем отступ сверху для блока "extraction" */
+      }
+
+      /* Стили для текста в блоке "extraction" */
+      .extraction-container h4 {
+          margin-bottom: 0; /* Убираем отступ снизу */
+      }
+
+      .extraction-container p {
+          margin-bottom: 0; /* Убираем отступ снизу */
+      }
+
+      /* Стиль для кругового таймера */
+      .timer-container {
+          position: relative;
+          width: 150px;
+          height: 150px;
+          margin: 20px auto;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border-radius: 50%;
+      }
+
+      .timer-circle {
+          width: 150px;
+          height: 150px;
+          border-radius: 50%;
+          border: 10px solid #999; /* Серый цвет внешнего круга */
+          position: absolute;
+          top: 0;
+            left: 0;
+        }
+       
+        .timer-progress {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            clip-path: polygon(50% 50%, 100% 50%, 50% 100%); /* Форма треугольника */
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: #39ffdb; /* Желтый цвет прогресса */
+        }
+
+        .timer-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #00ffee; /* Золотой цвет центра */
+            border-radius: 50%;
+        }
+
+        .timer-center img {
+            width: 80%;
+            height: auto;
+        }
+
+        .timer-text {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 16px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #ccc;
+            border-radius: 50px;
+            overflow: hidden;
+            margin-bottom: 10px; /* Adjust as needed */
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background-color: rgb(4,129,255);
+            width: 0%; /* Initially 0% filled */
+            transition: width 1s ease-in-out; /* Smooth transition for filling */
+        }
+
+        /* Style for the "Claim" button */
+        #claimButton {
+            background-color: #007bff; /* Blue background */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-family: 'Junegull', sans-serif;
+        }
+
+        #claimButton:hover {
+            background-color: #0069d9; /* Darker blue on hover */
+        }
+        img::after {
+            content: "0";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2em;
+            color:  rgb(68, 224, 255);
+        }
+
+        #timer2 {
+            font-size: 1.2em;
+            color: rgb(0, 204, 255);
+            margin-top: 5px;
+            font-family: 'Junegull', sans-serif; /* Используем шрифт Junegull */
+        }
+        
+   
+
+
+
+
+
+
+        
+   
+    </style>
+</head>
+<body>
+    <div id="mapsImage" style="display: none; position: relative;">
+        <div></div>
+        <img src="EROR43-vmake.jpg" alt="Карта" style="width: 100%; height: auto;">
+        <div id="counter" style="font-size: 2em; color: rgb(255, 255, 255); margin-bottom: 15px; position: absolute; top: 12%; left: 50%; transform: translate(-50%, -50%);">0</div>
+        
+        <div id="connectWalletContainer" style="position: absolute; bottom: 10vh; left: 50%; transform: translate(-50%, 0); text-align: center;">
+            <button id="connectWalletButton" style="
+                background-color: #007bff; /* Синий фон */
+                color: white; /* Цвет текста */
+                border: none;
+                border-radius: 5px;
+                padding: 0.5rem 1rem; /* Уменьшенные отступы */
+                cursor: pointer;
+                font-family: 'Junegull', sans-serif;
+                font-size: 0.8em; /* Уменьшенный размер шрифта */
+                transform: scale(1); /* Масштабирование в 1 раз */
+                margin-bottom: 1rem; /* Добавляем отступ снизу */
+            ">
+                Connect Wallet
+            </button>
+            <div id="timer2" style="font-size: 0.75em; color: rgb(0, 204, 255); margin-top: 0.5rem;"></div> 
+        </div>
+        
+        <style>
+            @media (max-width: 768px) {
+                #connectWalletContainer {
+                    bottom: 5vh; /* Опускаем блок ниже на мобильных устройствах */
+                }
+                #connectWalletButton {
+                    font-size: 0.6em; /* Уменьшаем размер шрифта */
+                }
+                #timer2 {
+                    font-size: 0.375em; /* Уменьшаем размер шрифта для таймера */
+                }
+                #connectWalletButton {
+                    margin-bottom: 0.5rem; /* Уменьшаем отступ снизу на мобильных */
+                }
+            }
+        </style>
+        
+        
+       
+        
+        
+        
+        
+        
+        </div>
+       
+    </div>
+    
+    <script>
+        
+            
+        // Таймер на 5 дней (в миллисекундах)
+        const countdownDuration = 5 * 24 * 60 * 60 * 1000;
+        let countdownEnd = Date.now() + countdownDuration;
+    
+        function updateTimer() {
+            const now = Date.now();
+            const timeLeft = countdownEnd - now;
+    
+            if (timeLeft <= 0) {
+                document.getElementById("timer").textContent = "Time's up!";
+                clearInterval(timerInterval);
+                return;
+            }
+    
+            // Рассчитываем дни, часы, минуты и секунды
+            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+    
+            // Обновляем текст на таймере
+            document.getElementById("timer2").textContent = `Time left: ${days}d ${hours}h ${minutes}m ${seconds}s`;
+        }
+    
+        // Запускаем таймер
+        const timerInterval = setInterval(updateTimer, 1000);
+        updateTimer(); // Запускать один раз сразу, чтобы избежать задержки
+    </script>
+   
+     
+
+        
+   
+        
+        
+    </div>
+    <div class="container" id="content">
+        <div class="row" id="homeContent">
+            <div class="col-12 text-center">
+                <div class="header">
+                    <h4 id="randomFact"></h4>
+                </div> 
+            </div>
+        </div>
+        <div class="row" id="catCountContent">
+            <div class="col-12">
+                <div class="penguin-container">
+                    <img src="https://www.flagistrany.ru/data/flags/w1600/aq.png" alt="Antarctica Flag" class="antarctica-flag img-fluid mx-auto d-block"> 
+                    <img src="vin.png" alt="tuxedo penguin" width="150" height="150" class="img-fluid mx-auto d-block">
+                </div>
+                <div class="extraction-container">
+                    <div class="extraction-item">
+                        <h4>extraction </h4>
+                      
+
+                    </div>
+                    <div class="extraction-item">
+                        <p><img src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20enable-background%3D%22new%200%200%20512%20512%22%20viewBox%3D%220%200%20512%20512%22%3E%3Cpath%20fill%3D%22%236EC5A8%22%20d%3D%22M489.7%2C311.2l-141.3-22.8C344%2C132.1%2C231.5%2C22.2%2C74.1%2C22.2H22.2v51.8c0%2C157.4%2C109.9%2C269.9%2C266.2%2C274.4%20%20%20%20l22.8%2C141.3L385%2C385L489.7%2C311.2z%22%2F%3E%3Cpath%20fill%3D%22%2351A787%22%20d%3D%22M311.2%2C511c-1.6%2C0-3.2-0.2-4.8-0.5c-8.4-1.9-14.8-8.8-16.2-17.3l-20-124.3C110.8%2C356.3%2C1%2C237.4%2C1%2C74.1%20%20%20%20V22.3C1%2C10.5%2C10.5%2C1%2C22.2%2C1h51.8c163.3%2C0%2C282.2%2C109.8%2C294.7%2C269.2l124.3%2C20c8.5%2C1.4%2C15.4%2C7.8%2C17.3%2C16.2c1.9%2C8.4-1.4%2C17.2-8.5%2C22.2%20%20%20%20l-101.7%2C71.6L328.6%2C502C324.6%2C507.7%2C318%2C511%2C311.2%2C511z%20M43.5%2C43.5v30.6c0%2C144.9%2C101%2C249%2C245.6%2C253.2c10.2%2C0.3%2C18.8%2C7.8%2C20.4%2C17.9%20%20%20%20l14.5%2C89.7l43.7-62.1c1.4-2%2C3.1-3.7%2C5.1-5.1l62.1-43.7l-89.7-14.5c-10.1-1.6-17.6-10.2-17.9-20.4C323.1%2C144.5%2C219%2C43.5%2C74.1%2C43.5%20%20%20%20H43.5z%22%2F%3E%3Cg%3E%3Cline%20x1%3D%22112.9%22%20x2%3D%22114.4%22%20y1%3D%2299.8%22%20y2%3D%22101.3%22%20fill%3D%22%23FBCA60%22%2F%3E%3Cpath%20fill%3D%22%23FFF%22%20d%3D%22M114.4%2C122.6c-5.4%2C0-10.9-2.1-15-6.2l-1.5-1.5c-8.3-8.3-8.3-21.7%2C0-30s21.7-8.3%2C30%2C0l1.5%2C1.5%20%20%20%20c8.3%2C8.3%2C8.3%2C21.7%2C0%2C30C125.3%2C120.5%2C119.8%2C122.6%2C114.4%2C122.6z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E" alt="Fish Icon" style="width: 28.33px; height: auto; margin-bottom: 8px;"> +15 hours </p>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" id="tasksContent">
+            <div class="col-12">
+                <h2 class="tasks-header">Tasks</h2>
+                <div class="task-container">
+                    <div class="task">
+                        <div class="task-title">Boost PINGVI channel</div>
+                        <div class="task-count">50 CATS</div>
+                        <a href="https://t.me/pingvigang" class="button_1722621636632" target="_blank">
+                           <span class="tasks1" id="boostPingviChannel" style="color: rgb(68, 224, 255); cursor: pointer;">Boost to channel</span>
+                        </a>
+                    </a>
+                </div>
+                      <div class="task">
+                       <div class="task-title">Subscribe to Channel</div>
+                      <div class="task-count">100 $PINGVI</div>
+                      <a href="https://t.me/pingvigang" class="button_1722621636632" target="_blank">
+                        <span class="tasks1" id="subscribeChannel" style="color: rgb(68, 224, 255); cursor: pointer;">Subscribe to channel</span>
+                       
+                       
+                        
+                        
+                    
+                    </div>
+                <div class="task">
+                            <div class="task-title">add it to your nickname "🐧"</div>
+                            <div class="task-count">100 $PINGVI</div>
+                            <a href="tg://settings" id="addNickname" class="button_1722621636632">
+                                <span style="color: rgb(68, 224, 255);">нажми сюда чтобы выполнить</span>
+                            </a>
+                    
+                </div>
+                   
+                   <div class="task">
+                    <div class="task-title">FUN😊Улыбка =</div>
+                    <div class="task-count">100 $PINGVI</div>
+                    <a href="https://t.me/pingvigang" id="otherTask" class="button_1722621636632">
+                        <span style="color: rgb(68, 224, 255); cursor: pointer;">Нажми Сюда </span>
+                        
+                    </a>
+                    
+                </div>
+                
+                
+
+            </div>
+             <span style="color: rgb(255, 255, 255);"> выполнить выполнить выполнить выполнить выполнить vvvвыполнить vvвыполнить выполнить выполнить  </span>  
+            <button class="btn btn-secondary">Show more tasks</button>
+        </div>
+    </div>
+    
+   
+    <div class="control-panel">
+        <div class="control-buttons-container">
+            <div class="control-button" id="fridgeButton">
+ 
+    
+                <img src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2238%22%20height%3D%2254%22%20x%3D%2218%22%20y%3D%223%22%20fill%3D%22%2300a8de%22%20rx%3D%221%22%2F%3E%3Crect%20width%3D%2236%22%20height%3D%2254%22%20x%3D%2220%22%20y%3D%223%22%20fill%3D%22%2305b8e2%22%20rx%3D%221%22%2F%3E%3Crect%20width%3D%226%22%20height%3D%224%22%20x%3D%2220%22%20y%3D%2257%22%20fill%3D%22%2394a4a5%22%2F%3E%3Crect%20width%3D%226%22%20height%3D%224%22%20x%3D%2248%22%20y%3D%2257%22%20fill%3D%22%2394a4a5%22%2F%3E%3Crect%20width%3D%2230%22%20height%3D%2246%22%20x%3D%2222%22%20y%3D%227%22%20fill%3D%22%23dbdbdb%22%20rx%3D%222%22%2F%3E%3Crect%20width%3D%2227%22%20height%3D%2246%22%20x%3D%2225%22%20y%3D%227%22%20fill%3D%22%23efefef%22%20rx%3D%222%22%2F%3E%3Crect%20width%3D%226%22%20height%3D%2254%22%20x%3D%2212%22%20y%3D%223%22%20fill%3D%22%2305b8e2%22%20rx%3D%222%22%2F%3E%3Cpath%20fill%3D%22%230ec6e5%22%20d%3D%22M16%2C5V55a2%2C2%2C0%2C0%2C1-4%2C0V5a2%2C2%2C0%2C0%2C1%2C4%2C0Z%22%2F%3E%3Cpolygon%20fill%3D%22%230ec6e5%22%20points%3D%2212%2015%2012%2031%2011%2030.56%208%2029.22%208%2016.78%2011%2015.45%2012%2015%22%2F%3E%3Crect%20width%3D%2230%22%20height%3D%222%22%20x%3D%2222%22%20y%3D%2220%22%20fill%3D%22%23b7b7b7%22%2F%3E%3Crect%20width%3D%226%22%20height%3D%222%22%20x%3D%2234%22%20y%3D%2211%22%20fill%3D%22%23b7b7b7%22%2F%3E%3Crect%20width%3D%2212%22%20height%3D%224%22%20x%3D%2231%22%20y%3D%2243%22%20fill%3D%22%2394a4a5%22%2F%3E%3Cpolygon%20fill%3D%22%2395e7ef%22%20points%3D%2248%2031%2048%2039%2042%2039%2042%2031%2043%2029%2043%2025%2047%2025%2047%2029%2048%2031%22%2F%3E%3Cpath%20fill%3D%22%23ed6a30%22%20d%3D%22M32%2C36a2.968%2C2.968%2C0%2C0%2C1-2%2C2.82A2.772%2C2.772%2C0%2C0%2C1%2C29%2C39a3%2C3%2C0%2C0%2C1%2C0-6%2C2.772%2C2.772%2C0%2C0%2C1%2C1%2C.18A2.968%2C2.968%2C0%2C0%2C1%2C32%2C36Z%22%2F%3E%3Ccircle%20cx%3D%2235%22%20cy%3D%2236%22%20r%3D%223%22%20fill%3D%22%23ed6a30%22%2F%3E%3Cpolygon%20fill%3D%22%2338e0e8%22%20points%3D%2248%2031%2048%2039%2042%2039%2042%2031%2042.5%2030%2047.5%2030%2048%2031%22%2F%3E%3Cellipse%20cx%3D%2230%22%20cy%3D%2236%22%20fill%3D%22%23ed7445%22%20rx%3D%222%22%20ry%3D%222.82%22%2F%3E%3Cellipse%20cx%3D%2236%22%20cy%3D%2236%22%20fill%3D%22%23ed7445%22%20rx%3D%222%22%20ry%3D%222.82%22%2F%3E%3Crect%20width%3D%2230%22%20height%3D%222%22%20x%3D%2222%22%20y%3D%2238%22%20fill%3D%22%23b7b7b7%22%2F%3E%3Cpolygon%20fill%3D%22%2311b8c9%22%20points%3D%2212%2015%2012%2031%2011%2030.56%2011%2015.45%2012%2015%22%2F%3E%3Crect%20width%3D%226%22%20height%3D%221%22%20x%3D%2220%22%20y%3D%2257%22%20fill%3D%22%238d9999%22%2F%3E%3Crect%20width%3D%226%22%20height%3D%221%22%20x%3D%2248%22%20y%3D%2257%22%20fill%3D%22%238d9999%22%2F%3E%3C%2Fsvg%3E" alt="Холодильник">
+                <div class="control-button-text">Fridge</div>
+            </div>
+            <div class="control-button" id="homeButton">
+                <img src="https://cdn-icons-png.flaticon.com/128/9073/9073243.png" alt="Домой">
+                <div class="control-button-text">Home</div>
+            </div>
+            <div class="control-button" id="mapsButton">
+                <img src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20110%20110%22%3E%3Cg%20data-name%3D%226.%20Payment%22%3E%3Cpath%20fill%3D%22%23e7efff%22%20d%3D%22M101%2C59a50%2C50%2C0%2C0%2C1-67.08%2C47C34.18%2C93%2C11%2C89%2C11%2C89a50%2C50%2C0%2C1%2C1%2C90-30Z%22%2F%3E%3Ccircle%20cx%3D%2212.28%22%20cy%3D%224%22%20r%3D%223%22%20fill%3D%22%2300c99f%22%2F%3E%3Ccircle%20cx%3D%2294%22%20cy%3D%228%22%20r%3D%223%22%20fill%3D%22%23ffa100%22%2F%3E%3Ccircle%20cx%3D%22106%22%20cy%3D%2295%22%20r%3D%223%22%20fill%3D%22%2300c99f%22%2F%3E%3Ccircle%20cx%3D%226%22%20cy%3D%22102%22%20r%3D%223%22%20fill%3D%22%23ff4d69%22%2F%3E%3Cpath%20fill%3D%22%237f96d1%22%20d%3D%22M63%2C24V94a12%2C12%2C0%2C0%2C1-12%2C12H33.92a49%2C49%2C0%2C0%2C1-8.43-4C25.11%2C93.7%2C15%2C93.68%2C15%2C93.68A48.1%2C48.1%2C0%2C0%2C1%2C11%2C89V24A12%2C12%2C0%2C0%2C1%2C23%2C12H51A12%2C12%2C0%2C0%2C1%2C63%2C24Z%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20d%3D%22M59%2C23V95a7%2C7%2C0%2C0%2C1-7%2C7H25.49A49.47%2C49.47%2C0%2C0%2C1%2C15%2C93.68V23a7%2C7%2C0%2C0%2C1%2C7-7H52A7%2C7%2C0%2C0%2C1%2C59%2C23Z%22%2F%3E%3Crect%20width%3D%2219%22%20height%3D%2231%22%20x%3D%2221%22%20y%3D%2255%22%20fill%3D%22%234e6aff%22%20rx%3D%222%22%2F%3E%3Cpath%20fill%3D%22%2300c99f%22%20d%3D%22M38.37%2C69.77l-11-9a1%2C1%2C0%2C0%2C1%2C0-1.54l11-9A1%2C1%2C0%2C0%2C1%2C40%2C51v4H58a1%2C1%2C0%2C0%2C1%2C1%2C1v8a1%2C1%2C0%2C0%2C1-1%2C1H40v4a1%2C1%2C0%2C0%2C1-1.63.77Z%22%2F%3E%3Cpath%20fill%3D%22%237f96d1%22%20d%3D%22M26%2C15H48a0%2C0%2C0%2C0%2C1%2C0%2C0v2a4%2C4%2C0%2C0%2C1-4%2C4H30a4%2C4%2C0%2C0%2C1-4-4V15A0%2C0%2C0%2C0%2C1%2C26%2C15Z%22%2F%3E%3Crect%20width%3D%2260%22%20height%3D%2244%22%20x%3D%2245%22%20y%3D%2238%22%20fill%3D%22%234e6aff%22%20rx%3D%226%22%2F%3E%3Crect%20width%3D%2260%22%20height%3D%2210%22%20x%3D%2245%22%20y%3D%2245%22%20fill%3D%22%238fa2ff%22%2F%3E%3Crect%20width%3D%2212%22%20height%3D%228%22%20x%3D%2251%22%20y%3D%2265%22%20fill%3D%22%23fff%22%20rx%3D%222%22%2F%3E%3Crect%20width%3D%226%22%20height%3D%222%22%20x%3D%2251%22%20y%3D%2259%22%20fill%3D%22%238fa2ff%22%20rx%3D%221%22%2F%3E%3Crect%20width%3D%226%22%20height%3D%222%22%20x%3D%2261%22%20y%3D%2259%22%20fill%3D%22%238fa2ff%22%20rx%3D%221%22%2F%3E%3Crect%20width%3D%226%22%20height%3D%222%22%20x%3D%2271%22%20y%3D%2259%22%20fill%3D%22%238fa2ff%22%20rx%3D%221%22%2F%3E%3Crect%20width%3D%226%22%20height%3D%222%22%20x%3D%2281%22%20y%3D%2259%22%20fill%3D%22%238fa2ff%22%20rx%3D%221%22%2F%3E%3Cpath%20fill%3D%22%23a5bced%22%20d%3D%22M24%2031h3a1%201%200%20000-2H25V28a1%201%200%2000-2%200v1.14A4%204%200%200024%2037a2%202%200%20010%204H21a1%201%200%20000%202h2v1a1%201%200%20002%200V42.86A4%204%200%200024%2035a2%202%200%20010-4zM34%2031h6a1%201%200%20000-2H34a1%201%200%20000%202zM45%2034H34a1%201%200%20000%202H45a1%201%200%20000-2zM40%2039H34a1%201%200%20000%202h6a1%201%200%20000-2z%22%2F%3E%3Crect%20width%3D%2232%22%20height%3D%222%22%20x%3D%2221%22%20y%3D%2294%22%20fill%3D%22%23a5bced%22%20rx%3D%221%22%2F%3E%3Crect%20width%3D%224%22%20height%3D%222%22%20x%3D%2224%22%20y%3D%2281%22%20fill%3D%22%23fff%22%20rx%3D%221%22%2F%3E%3Crect%20width%3D%224%22%20height%3D%222%22%20x%3D%2230%22%20y%3D%2281%22%20fill%3D%22%23fff%22%20rx%3D%221%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E" alt="Друзья">
+                <div class="control-button-text">Cards</div>
+            </div>
+        </div>
+    </div>
+    <div class="row" id="fridgeContent" style="display: none;">
+        <div class="col-12 text-center">
+            
+            <div class="task">
+                <div class="task-title">Invite three friends </div>
+                <div class="task-count">1000 $PINGVI </div>
+                <button id="copyButton" class="button_1722621636632">
+                  Выполнить
+                </button>
+            
+                <div class="popup">
+                  Приглашать друзей можно только 5 дней - You can only invite friends for 5 days
+                </div>
+              
+              </div>
+              <style>
+                .task {
+                    margin-bottom: 20px;
+                    position: relative; /* Для позиционирования всплывающего элемента */
+                }
+              
+                  .popup {
+                    color: rgb(0, 213, 255); /* Устанавливаем цвет текста */
+                    display: none; /* Скрываем всплывающее окно по умолчанию */
+                    position: absolute;
+                    top: 100%; /* Позиционируем под кнопкой */
+                    left: 0;
+                    background-color: #fff; /* Фон всплывающего окна */
+                    border-radius: 5px;
+                    padding: 10px;
+                    box-shadow: 0 2px 5px rgba(255, 255, 255, 0.2); /* Тень */
+                    z-index: 10; /* Устанавливаем приоритет отображения */
+                  }
+              
+                  .task:hover .popup {
+                    display: block; /* Показываем всплывающее окно при наведении */
+                  }
+                .button_1722621636632 {
+                  background: none;
+                  border: none;
+                  padding: 0;
+                  font-size: 16px;
+                  color: rgb(0, 213, 255);
+                  cursor: pointer;
+                }
+              
+                .button_1722621636632:hover {
+                  text-decoration: underline;
+                }
+              </style>
+              <script>
+                const copyButton = document.getElementById('copyButton');
+                const linkToCopy = 'https://t.me/Pingvigang_bot';
+              
+                copyButton.addEventListener('click', () => {
+                  navigator.clipboard.writeText(linkToCopy)
+                    .then(() => {
+                      // Изменяем текст кнопки на "Ссылка скопирована"
+                      copyButton.textContent = 'Ссылка скопирована'; 
+                      // Задержка на 3 секунды
+                      setTimeout(() => {
+                        // Возвращаем исходный текст "Выполнить"
+                        copyButton.textContent = 'Выполнить'; 
+                      }, 3000); 
+                    })
+                    .catch(err => {
+                      console.error('Failed to copy: ', err);
+                    });
+                });
+              </script>
+              
+                
+            </div>
+            
+
+            <div class="image-container">
+                <img src="vin.png" alt="tuxedo penguin" width="150" height="150" class="img-fluid mx-auto d-block">
+              
+            
+            </div>
+            <div class="progress-bar">
+                
+                <div class="progress-bar-fill" id="progressBarFill"></div>
+
+                <div id="timer" style="position: absolute; bottom: 62,5px; left: 50%; transform: translateX(-50%); color: rgb(255, 255, 255);">0</div> 
+              
+    
+            </div>
+            <button id="claimButton" class="btn btn-primary" style="margin-top: 10px;">Claim</button>
+              
+        </div>
+    
+    
+  
+    <style>
+    @font-face {
+      font-family: 'Junegull';
+      src: url('fonts/junegull.ttf') format('truetype'); /* Replace with the actual path */
+    }
+    
+    .image-container {
+      position: relative;
+      display: inline-block; /* For proper positioning within the list */
+    }
+    
+    .image-container img {
+      transition: transform 0.1s ease; /* Smooth transition for the hover effect */
+    }
+    
+    .image-container:hover img {
+      transform: scale(1.1); /* Make the image slightly bigger on hover */
+      cursor: pointer; /* Change the cursor to a pointer on hover */
+    }
+    
+    .task, .task-title, .task-count, .button_1722621636632 span, #counter, #timer {
+      font-family: 'Junegull', sans-serif; 
+    }
+    
+    .task-title, .task-count, .button_1722621636632 span {
+      font-family: sans-serif; /* Default font for these elements */
+    }
+    
+    #timer {
+      font-family: 'Junegull', sans-serif; 
+    }
+    
+    #fridgeContent {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    /* Animation and glow styles */
+    .image-container img.active {
+      animation: pulse 1s infinite;
+      filter: drop-shadow(0 0 10px rgb(58, 245, 255)); /* Blue glow */
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+    </style>
+    
+         
+      
+    
+    <script>
+
+
+        
+          
+        let counter = 0;
+        let timer = 0; // Start timer at 0 for forward counting
+        let intervalId;
+        let lastClickTime = 0;
+        let cooldownTime = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
+
+
+            
+           
+
+        
+            
+        
+        
+           
+        
+    document.addEventListener("DOMContentLoaded", function() {
+
+         // Функция для добавления события нажатия на кнопки
+    function addTaskEvent(buttonId, increment = 150, delay = 0, actionAfter = null) {
+        const button = document.getElementById(buttonId);
+        if (button) { // Проверяем, существует ли кнопка
+            button.addEventListener("click", function(event) {
+                if (!button.classList.contains('completed')) { // Проверка, была ли кнопка нажата ранее
+                    if (actionAfter) {
+                        // Сначала выполняем действие (открываем ссылку), затем задержку
+                        window.open(button.href, '_blank'); // Открываем ссылку
+                        setTimeout(() => {
+                            counter += increment; // Добавляем к счётчику
+                            document.getElementById("counter").textContent = counter; // Обновляем отображаемое значение
+                            
+                        // Общие действия для всех кнопок после выполнения
+                            button.classList.add('completed'); // Меняем класс для блокировки повторного нажатия
+                            button.querySelector('span').textContent = "Задание выполнено!"; // Меняем текст после выполнения
+                            button.style.pointerEvents = 'none'; // Отключаем взаимодействие
+                        }, delay); // Задержка перед добавлением
+                    } else {counter += increment; // Добавляем к счётчику сразу если нет задержки
+                        document.getElementById("counter").textContent = counter; // Обновляем отображаемое значение
+                        button.classList.add('completed'); // Меняем класс для блокировки повторного нажатия
+                        button.querySelector('span').textContent = "Задание выполнено!"; // Меняем текст после выполнения
+                        button.style.pointerEvents = 'none'; // Отключаем взаимодействие
+                        event.preventDefault(); // Отменяем переход по ссылке, если это кнопка с заданием
+                    }
+                } else {
+                    // Если задача уже выполнена, позволяет перейти по ссылке
+                    window.open(button.href, '_blank');
+                }
+            });
+        } else {
+            console.warn(`Button with ID '${buttonId}' not found.`);
+        }
+    }
+        
+
+    window.onload = function() {
+        document.getElementById("counter").textContent = counter;
+
+        // Добавление обработчиков для каждой кнопки
+        addTaskEvent("boostPingviChannel");
+        addTaskEvent("subscribeChannel");
+        addTaskEvent("otherTask");
+        addTaskEvent("addNickname", 1000, 30000, true); // Открытие ссылки, добавление +1000 через 30 секунд
+        addTaskEvent("inviteFriends", 10000, 30000, true); // Открытие ссылки, добавление +10000 через 30 секунд
+        };
+    });
+
+
+        const imageContainer = document.querySelector('.image-container');
+        const imageElement = document.querySelector('.image-container img'); // Get the image element
+        const counterElement = document.getElementById('counter');
+        const timerElement = document.getElementById('timer');
+        const progressBarFill = document.getElementById('progressBarFill');
+        const claimButton = document.getElementById('claimButton');
+      
+        // Touch events for mobile support
+        imageContainer.addEventListener('touchstart', () => {
+          if (Date.now() - lastClickTime < cooldownTime) {
+            alert('Wait for 2 hours before clicking again!');
+            return;
+          }
+          lastClickTime = Date.now();
+      
+          imageElement.classList.add('active'); // Add the active class for animation and glow
+          intervalId = setInterval(() => {
+            counter += 15;
+            counterElement.textContent = counter;
+            timer++; // Increase timer value
+            timerElement.textContent = timer;
+            progressBarFill.style.width = (timer / 60) * 100 + '%'; // Update progress bar
+            if (timer >= 60) { // Stop at 60 seconds
+              clearInterval(intervalId);
+              alert("Time's up!");
+              imageElement.classList.remove('active'); // Remove the active class on timeout
+            }
+          }, 1000); // 1 second interval
+        });
+      
+        imageContainer.addEventListener('touchend', () => {
+          clearInterval(intervalId);
+          imageElement.classList.remove('active'); // Remove the active class on touch end
+        });
+      
+        // Keep the 'mousedown' event for desktop support
+        imageContainer.addEventListener('mousedown', () => {
+          if (Date.now() - lastClickTime < cooldownTime) {
+            alert('Wait for 2 hours before clicking again!');
+            return;
+          }
+          lastClickTime = Date.now();
+      
+          imageElement.classList.add('active'); // Add the active class for animation and glow
+          intervalId = setInterval(() => {
+            counter += 15;
+            counterElement.textContent = counter;
+            timer++; // Increase timer value
+            timerElement.textContent = timer;
+            progressBarFill.style.width = (timer / 60) * 100 + '%'; // Update progress bar
+            if (timer >= 60) { // Stop at 60 seconds
+              clearInterval(intervalId);
+              alert("Time's up!");
+              imageElement.classList.remove('active'); // Remove the active class on timeout
+            }
+          }, 1000); // 1 second interval
+        });
+      
+        imageContainer.addEventListener('mouseup', () => {
+          clearInterval(intervalId);
+          imageElement.classList.remove('active'); // Remove the active class on mouse up
+        });
+      
+        imageContainer.addEventListener('mouseout', () => {
+          clearInterval(intervalId);
+          imageElement.classList.remove('active'); // Remove the active class on mouse out
+        });
+       
+          // Добавляем переменную для хранения количества нажатий на кнопку Claim
+          let claimCount = 0;
+        
+          // ... (Your existing code) ...
+  
+  claimButton.addEventListener('click', () => {
+      clearInterval(intervalId);
+      imageElement.classList.remove('active');
+  
+      // Reset the timer
+      timer = 0; 
+      timerElement.textContent = timer; 
+      progressBarFill.style.width = '0%'; 
+  
+      // Set up the cooldown timer
+      let cooldownSeconds = 2 * 60 * 60; // 2 hours in seconds
+      let cooldownTimer = setInterval(() => {
+          cooldownSeconds--;
+  
+          // Update the timer display
+          timerElement.textContent = formatTime(cooldownSeconds); 
+  
+          // Check if the timer has reached 0
+          if (cooldownSeconds <= 0) {
+              clearInterval(cooldownTimer);
+              timerElement.textContent = "00:00:00"; // Reset the timer display
+              // Re-enable the button 
+              claimButton.disabled = false;
+          }
+      }, 1000); // Update every second
+  
+      // Optional: Disable the button until the cooldown is over
+      claimButton.disabled = true; 
+  });
+  
+  // Function to format seconds into HH:MM:SS
+  function formatTime(seconds) {
+      const hours = Math.floor(seconds / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
+      const remainingSeconds = seconds % 60;
+      return pad(hours) + ':' + pad(minutes) + ':' + pad(remainingSeconds);
+  }
+  
+  // Helper function to pad single digits with leading zeros
+  function pad(number) {
+      return number < 10 ? '0' + number : number;
+  }
+  
+        
+          
+  
+  
+  
+  
+      </script>
+      
+        
+      
+      <script>
+          const timerValueElement = document.getElementById('timerValue');
+          const cooldownTimerElement = document.getElementById('cooldownTimer');
+    
+          
+
+     const randomFactElement = document.getElementById('randomFact');
+     
+
+     const facts = [
+         "Существует 18 видов пингвинов, каждый из которых имеет свои особенности.",
+         "Пингвины могут нырять на глубину до 500 метров и оставаться под водой до 20 минут.",
+         "Пингвины живут в колониях, насчитывающих сотни и даже тысячи особей.",
+         "Пингвины общаются друг с другом с помощью различных звуков и движений.",
+         "Пингвины не мёрзнут в холодной воде благодаря толстому слою жира и перьям, образующим водонепроницаемую оболочку.",
+         "Пингвины — социальные птицы и часто образуют пары на всю жизнь.",
+         "Глаза пингвинов устроены таким образом, что они могут видеть под водой и на суше."
+     ];
+  
+     function getRandomFact() {
+         const randomIndex = Math.floor(Math.random() * facts.length);
+         randomFactElement.textContent = facts[randomIndex];
+     }
+  
+     getRandomFact(); // Вызываем функцию при загрузке страницы
+  
+   
+       const fridgeButton = document.getElementById('fridgeButton');
+       const homeButton = document.getElementById('homeButton');
+       const mapsButton = document.getElementById('mapsButton');
+       const homeContent = document.getElementById('homeContent');
+       const catCountContent = document.getElementById('catCountContent');
+       const tasksContent = document.getElementById('tasksContent'); 
+       const fridgeContent = document.getElementById('fridgeContent');
+       const mapsImage = document.getElementById('mapsImage');
+   
+       fridgeButton.addEventListener('click', () => {
+           homeContent.style.display = 'none';
+           catCountContent.style.display = 'none';
+           tasksContent.style.display = 'none';
+           fridgeContent.style.display = 'block'; 
+           mapsImage.style.display = 'none';
+       });
+   
+       homeButton.addEventListener('click', () => {
+           homeContent.style.display = 'block';
+           catCountContent.style.display = 'block';
+           tasksContent.style.display = 'block'; 
+           fridgeContent.style.display = 'none';
+           mapsImage.style.display = 'none';
+       });
+   
+       mapsButton.addEventListener('click', () => {
+           homeContent.style.display = 'none';
+           catCountContent.style.display = 'none';
+           tasksContent.style.display = 'none';
+           fridgeContent.style.display = 'none';
+           mapsImage.style.display = 'block';
+       });
+  
+        
+      
+          
+      
+   </script>
+   
+   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+   </body>
+  </html>
